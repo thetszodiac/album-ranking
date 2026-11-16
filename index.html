@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The TS Zodiac | Album Rankings</title>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
+<style>
+:root {
+  --bg: #f8f5f0;
+  --card: #fffdfa;
+  --text: #4a4240;
+  --muted: #8b807b;
+  --border: #e7dfd7;
+  --accent: #9b817d;
+  --soft: #f1ebe5;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 28px 16px 60px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Georgia, serif;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 680px;
+  margin: auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.brand {
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+h1 {
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: normal;
+  line-height: 1.2;
+  margin: 18px 0 10px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 27px 23px;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 23px;
+  font-weight: normal;
+  margin: 0 0 8px;
+}
+
+
+.smaller-heading {
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.description {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 22px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: white;
+  color: var(--text);
+  font-family: Georgia, serif;
+  font-size: 16px;
+}
+
+.album-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+}
+
+.album {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 12px;
+  margin-bottom: 9px;
+  min-height: 66px;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.album:active { cursor: grabbing; }
+
+.rank {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: var(--soft);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 15px;
+}
+
+.album-name {
+  flex: 1;
+  font-size: 16px;
+}
+
+.drag-handle {
+  color: var(--muted);
+  font-size: 21px;
+  padding: 0 5px;
+}
+
+.sortable-ghost {
+  opacity: 0.35;
+  background: var(--soft);
+}
+
+.sortable-chosen {
+  border-color: var(--accent);
+}
+
+.rank-note {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin: 18px 0 0;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  background: var(--accent);
+  color: white;
+  font-family: Georgia, serif;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+
+#submitButton {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 14px 38px;
+}
+
+
+button:hover { opacity: 0.9; }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.message {
+  display: none;
+  text-align: center;
+  padding: 15px;
+  margin-top: 15px;
+  background: var(--soft);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+#signMessage {
+  margin-bottom: 20px;
+}
+
+.submit-wrapper {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 15px auto 0;
+}
+
+.sparkle {
+  position: absolute;
+  pointer-events: none;
+  color: #9a908b;
+  font-family: Georgia, serif;
+  font-size: 16px;
+  opacity: 0;
+  z-index: 5;
+}
+
+.sparkle.animate {
+  animation: sparkleButton 1.2s ease-out forwards;
+}
+
+@keyframes sparkleButton {
+  0% {
+    transform: scale(0.5) translateY(4px);
+    opacity: 0;
+  }
+
+  20% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.7) translateY(-14px);
+    opacity: 0;
+  }
+}
+
+
+footer {
+  text-align: center;
+  margin-top: 35px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+footer a {
+  color: var(--accent);
+}
+
+@media(max-width:480px) {
+  body { padding: 20px 12px 45px; }
+  .card { padding: 23px 17px; }
+}
+
+/* THANK YOU SCREEN */
+
+.thank-you-screen {
+  display: none;
+  text-align: center;
+}
+
+.thank-you-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.thank-you-screen .thank-you-title {
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: normal;
+  margin: 0 0 25px;
+}
+
+.thank-you-screen .thank-you-message {
+  font-size: 16px;
+  margin: 20px 0;
+}
+
+.thank-you-screen .thank-you-detail {
+  color: var(--muted);
+  margin: 25px 0;
+}
+
+.threads-link {
+  display: inline-block;
+  width: auto;
+  padding: 12px 25px;
+  margin-top: 15px;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  text-decoration: none;
+  font-family: Georgia, serif;
+  font-size: 16px;
+}
+
+.threads-link:hover,
+.threads-link:focus-visible,
+.threads-link:active {
+  background: var(--accent);
+  color: white;
+  opacity: 1;
+}
+
+#surveyContent section:last-child {
+  text-align: center;
+}
+
+#surveyContent section:last-child .description {
+  text-align: center;
+}
+  
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div id="surveyContent">
+  
+<header>
+  <div class="brand">✨ The TS Zodiac ✨</div>
+  <h1>The Taylor Swift Zodiac<br>Album Rankings</h1>
+  <div class="subtitle">
+    It's like a million little stars<br>spelling out your fave...
+  </div>
+</header>
+
+<section class="card">
+  <h2 class="section-title smaller-heading">
+  Can I ask you a question?
+</h2>
+  <p class="description">
+    We've looked at Taylor's songs individually, but what does the zodiac have to say about
+    the albums as a whole? We're collecting data from Swifties to find out!
+  </p>
+
+  <div class="message" id="signMessage" role="alert"></div>
+
+<label for="sunSign">What's your zodiac sign?</label>
+<select id="sunSign" required>
+    <option value="">select</option>
+    <option>Aries</option>
+    <option>Taurus</option>
+    <option>Gemini</option>
+    <option>Cancer</option>
+    <option>Leo</option>
+    <option>Virgo</option>
+    <option>Libra</option>
+    <option>Scorpio</option>
+    <option>Sagittarius</option>
+    <option>Capricorn</option>
+    <option>Aquarius</option>
+    <option>Pisces</option>
+  </select>
+</section>
+
+<section class="card">
+  <h2 class="section-title smaller-heading">
+  The discography
+</h2>
+  <p class="description">
+    Drag and drop the albums into your preferred order.
+    Your number one should be your absolute favourite,
+    and number twelve your least favourite.
+  </p>
+
+  <ul class="album-list" id="albumList">
+
+    <li class="album">
+      <span class="rank">1</span>
+      <span class="album-name">Debut</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">2</span>
+      <span class="album-name">Fearless</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">3</span>
+      <span class="album-name">Speak Now</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">4</span>
+      <span class="album-name">Red</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">5</span>
+      <span class="album-name">1989</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">6</span>
+      <span class="album-name">Reputation</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">7</span>
+      <span class="album-name">Lover</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">8</span>
+      <span class="album-name">folklore</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">9</span>
+      <span class="album-name">evermore</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">10</span>
+      <span class="album-name">Midnights</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">11</span>
+      <span class="album-name">The Tortured Poets Department</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+    <li class="album">
+      <span class="rank">12</span>
+      <span class="album-name">The Life of a Showgirl</span>
+      <span class="drag-handle">⠿</span>
+    </li>
+
+  </ul>
+
+
+</section>
+
+<section class="card">
+  <h2 class="section-title smaller-heading">
+  Are you ready for it?
+</h2>
+  <p class="description">
+    Once you're happy with your album order, submit your ranking!
+  </p>
+
+  <div class="submit-wrapper">
+  <button id="submitButton" type="button">
+    submit 🫶
+  </button>
+</div>
+
+<p style="font-size:12px; color:#8b807b; margin-top:18px; line-height:1.5;">
+  Privacy note: this survey does not ask for or record names, email addresses or locations. Responses are collected anonymously.
+</p>
+
+</section>
+</div>
+
+
+<div class="thank-you-screen" id="thankYouScreen">
+
+  <header class="thank-you-header">
+    <div class="brand">✨ THE TS ZODIAC ✨</div>
+  </header>
+
+  <section class="card" style="text-align: center;">
+
+  <h2 class="thank-you-title">
+
+    Stars all aligned, and they intertwined...
+
+  </h2>
+
+  <p class="thank-you-message">
+
+    Thank you, Swiftie!
+
+  </p>
+
+    <p class="thank-you-detail">
+      Your album ranking has been sent to the stars.
+      <br>
+      I'll share the results over on Threads soon!
+    </p>
+
+    <a
+      class="threads-link"
+      href="https://www.threads.com/@katehxlland"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Follow along on Threads
+    </a>
+
+  </section>
+
+</div>
+
+  
+<footer>
+  <p>
+    Back to <a href="https://thetszodiac.tumblr.com/">The TS Zodiac</a>
+  </p>
+  <p>
+    An independent fan project.<br>
+    Not affiliated with Taylor Swift.
+  </p>
+</footer>
+
+</div>
+
+
+<script>
+
+const albumList = document.getElementById("albumList");
+
+// ZODIAC ERROR MESSAGE
+document.getElementById("sunSign").addEventListener("change", () => {
+  document.getElementById("signMessage").style.display = "none";
+});
+
+// UPDATE RANK NUMBERS
+function updateRanks() {
+  [...albumList.children].forEach((album, index) => {
+    album.querySelector(".rank").textContent = index + 1;
+  });
+}
+
+// DRAG AND DROP
+new Sortable(albumList, {
+  animation: 180,
+  ghostClass: "sortable-ghost",
+  chosenClass: "sortable-chosen",
+  handle: ".drag-handle",
+  onEnd: updateRanks
+});
+
+// GOOGLE SHEETS CONNECTION
+const SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbwf3jF0Phn-obwv9bLTpc6dO_yduZvdpAKkUJCB_ufRq7OARQaGrSvNTugYKHR6fQ5v/exec";
+
+// SPARKLE ANIMATION
+function animateSparkles() {
+  const wrapper = document.querySelector(".submit-wrapper");
+
+  wrapper.querySelectorAll(".sparkle").forEach(
+    sparkle => sparkle.remove()
+  );
+
+  const symbols = [
+    { symbol: "✦", top: "-12px", left: "-15px" },
+    { symbol: "✧", top: "-15px", right: "-14px" },
+    { symbol: "·", bottom: "-10px", left: "5px" },
+    { symbol: "✦", bottom: "-12px", right: "4px" }
+  ];
+
+  symbols.forEach((item, index) => {
+    const sparkle = document.createElement("span");
+
+    sparkle.className = "sparkle";
+    sparkle.textContent = item.symbol;
+
+    Object.assign(sparkle.style, {
+      top: item.top || "auto",
+      bottom: item.bottom || "auto",
+      left: item.left || "auto",
+      right: item.right || "auto",
+      animationDelay: `${index * 0.12}s`
+    });
+
+    wrapper.appendChild(sparkle);
+
+    requestAnimationFrame(() => {
+      sparkle.classList.add("animate");
+    });
+
+    sparkle.addEventListener("animationend", () => {
+      sparkle.remove();
+    });
+  });
+}
+
+// SUBMIT RANKING
+document.getElementById("submitButton").addEventListener("click", async () => {
+
+  const button = document.getElementById("submitButton");
+  const sign = document.getElementById("sunSign").value;
+
+  const signMessage = document.getElementById("signMessage");
+
+  // CHECK ZODIAC SIGN
+  if (!sign) {
+    signMessage.style.display = "block";
+    signMessage.textContent =
+      "Please choose your zodiac sign before submitting.";
+
+    document.getElementById("sunSign").focus();
+    return;
+  }
+
+  signMessage.style.display = "none";
+
+  // COLLECT ALBUM RANKING
+  const ranking = [...albumList.children].map(
+    album => album.querySelector(".album-name").textContent.trim()
+  );
+
+  // CHECK ALL TWELVE ALBUMS
+if (ranking.length !== 12 || new Set(ranking).size !== 12) {
+  alert("Please rank all twelve albums.");
+  return;
+}
+
+  // PREPARE SUBMISSION
+  animateSparkles();
+
+  button.disabled = true;
+  button.textContent = "submitting...";
+
+
+  const payload = {
+    submissionType: "albumRanking",
+    sunSign: sign,
+    ranking: ranking
+  };
+
+  // SEND TO GOOGLE SHEETS
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    // SHOW THANK YOU SCREEN
+    document.getElementById("surveyContent").style.display = "none";
+
+    document.getElementById("thankYouScreen").style.display = "block";
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  } catch (error) {
+
+    // RESTORE SUBMISSION IF AN ERROR OCCURS
+    alert("Something went wrong. Please try again.");
+
+button.disabled = false;
+button.textContent = "submit 🫶";
+  }
+
+});
+
+</script>
+
+
+</body>
+</html>
